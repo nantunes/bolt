@@ -526,7 +526,7 @@ class Config
 
         foreach ($fields as $key => $field) {
             unset($fields[$key]);
-            $key = str_replace('-', '_', strtolower(Str::makeSafe($key, true)));
+            $key = str_replace('-', '_', Str::makeSafe($key, false));
 
             // If field is a "file" type, make sure the 'extensions' are set, and it's an array.
             if ($field['type'] == 'file' || $field['type'] == 'filelist') {
