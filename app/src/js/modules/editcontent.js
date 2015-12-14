@@ -49,6 +49,7 @@
         initValidation();
         initSave();
         initSaveNew();
+        initSaveClose(data);
         initSaveContinue(data);
         initPreview(data.singularSlug);
         initLiveEditor();
@@ -218,6 +219,55 @@
             // Do a regular post, and expect to be redirected back to the "new record" page.
             var newaction = '?returnto=saveandnew';
             $('#editcontent').attr('action', newaction).submit();
+        });
+    }
+
+    /**
+     * Initialize "save and close " button handlers, for popups.
+     *
+     * @static
+     * @function initSaveClose
+     * @memberof Bolt.editcontent
+     */
+    function initSaveClose(data) {
+        $('#saveclosebutton').bind('click', function (e) {
+            e.preventDefault();
+
+            // Trigger form validation
+            $('#editcontent').trigger('boltvalidate');
+            // Check validation
+            if (!$('#editcontent').data('valid')) {
+                return false;
+            }
+
+            var msgNotSaved = data.msgNotSaved;
+
+            // Disable the buttons, to indicate stuff is being done.
+            $('#saveclosebutton').addClass('disabled');
+            $('#saveclosebutton i').addClass('fa-spin fa-spinner');
+            $('p.lastsaved').text(bolt.data('editcontent.msg.saving'));
+
+            watchChanges();
+
+            // Existing record. Do an 'ajaxy' post to update the record.
+            // Let the controller know we're calling AJAX and expecting to be returned JSON.
+            $.post('?returnto=ajax', $('#editcontent').serialize())
+                .done(function () {
+                    parent.$.fancybox.close();
+                })
+                .fail(function(){
+                    $('p.lastsaved').text(msgNotSaved);
+
+                    // Re-enable buttons
+                    window.setTimeout(function(){
+                        $('#saveclosebutton').removeClass('disabled');
+                        $('#saveclosebutton i').removeClass('fa-spin fa-spinner');
+                    }, 300);
+                });
+        });
+
+        $('#justclosebutton').bind('click', function () {
+            parent.$.fancybox.close();
         });
     }
 

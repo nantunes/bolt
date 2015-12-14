@@ -158,6 +158,8 @@ class MetadataDriver implements MappingDriver
         $this->metadata[$className]['table'] = $table->getName();
         $this->metadata[$className]['boltname'] = $contentKey;
         foreach ($table->getColumns() as $colName => $column) {
+            $colName = $column->getName();
+
             $mapping = [
                 'fieldname'        => $colName,
                 'type'             => $column->getType()->getName(),
